@@ -55,3 +55,6 @@ sudo sh cuda_11.7.0_515.43.04_linux.run
 wget https://developer.download.nvidia.com/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-linux-x86_64-8.9.2.26_cuda11-archive.tar.xz?_f5UPa8xCgeO9bepnkH95zBNN0GDrMuS3sl20rVQXU43WpRzOgjR--4JvEfRsAxC0OOhS9pp7M7qsWMXvSqyMtj3bE32ICMJWrKzjdqORkzmfmfWn_7IMNdtvbUr6muoZMNyhSH_BaTwfSFDpOInnKEAB2_zfE9dkFs
 
 
+export CUDA_HOME=/usr/local/cuda
+export PATH=$CUDA_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH

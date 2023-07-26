@@ -1,0 +1,35 @@
+CPM-BEE-10B单机单卡
+准备环境
+1. 已有conda，所以直接使用conda create -n cpmbee python=3.9安装虚拟环境
+conda activate cpmbee激活环境
+2. 克隆代码，在/目录新建文件夹mkdir deepq2023，然后在/deepq2023/目录下运行git clone https://github.com/OpenBMB/CPM-Bee.git
+3. 安装依赖
+  a. 安装pytorch，适配cuda12.1，pip install torch -i https://pypi.tuna.tsinghua.edu.cn/simple/
+  b. 安装bmtrain，pip install bmtrain -i https://pypi.tuna.tsinghua.edu.cn/simple/
+    ⅰ. 如遇到torch版本不适配的问题
+      1. 将pytorch包内的 site-packages/torch/version.py 内的version 修改为12.1
+      2. 将pytorch包内的 site-packages/torch/nn/modules/module.py 第2112行 中的「, remove_duplicate=remove_duplicate」删除
+    ⅱ. 如遇到gcc没有安装的问题
+      1. 可以直接尝试安装gcc和g++，yum install gcc和yum install gcc-c++
+      2. 如果当前的yum源没有gcc或者g++（可以用yum list 或者 yum search 配合 grep 查看），需要更新或者切换yum源，在该目录sudo vi /etc/yum.repos.d/CentOS-Base.repo中进行配置，可以用如下代码直接切换到阿里云的yum源：sudo curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+    ⅲ. 如遇到gcc版本过低（默认4.8.5）需要升级到>5，参考本文
+      1. sudo yum install centos-release-scl
+      2. sudo yum install devtoolset-8-gcc*
+      3. scl enable devtoolset-8 bash
+      4. 如上三步后可以让当前终端改为gcc==7，此时继续进行pip install bmtrain 即可进行编译（需要～5min）
+  c. 安装其他依赖pip install jieba tqdm tensorboard numpy spacy opendelta
+4. 拷贝权重文件，拷贝权重文件到/deepq2023/目录在并解压，得到/deepq2023/cpm-bee-10b/，
+  a. 该文件夹可以使用初始化模型然后加载权重的方式进行load
+    ⅰ. 代码表现为：model.load_state_dict(torch.load("/deepq2023/cpm-bee-10b/pytorch_model.bin"), strict=False)
+  b. 如果需要使用huggingface的from_pretrained方式进行构建需要将huggingface仓库中的其他文件下来或者直接从云端下在模型权重
+    ⅰ. 将huggingface仓库中的其他文件下载下来：git clone https://huggingface.co/openbmb/cpm-bee-10b，该方式不会下载pytorch_model.bin，需要将之前解压的pytorch_model.bin文件移动到该目录下（如果想下载这样的大文件，需要在本地安装yum install git-lfs），最终的加载方式在代码中表现为XXX.from_pretrained("/deepq2023/tmp/cpm-bee-10b/")
+    ⅱ. 直接在线加载和下载模型以及权重：在代码中表现为XXX.from_pretrained("openbmb/cpm-bee-10b")
+
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
+
+mv /usr/bin/gcc /usr/bin/gcc-4.8.5
+ln -s /opt/rh/devtoolset-8/root/bin/gcc /usr/bin/gcc
+ 
+mv /usr/bin/g++ /usr/bin/g++-4.8.5
+ln -s /opt/rh/devtoolset-8/root/bin/g++ /usr/bin/g++

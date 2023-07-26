@@ -1,0 +1,9 @@
+curl --request POST \
+  --url http://192.168.11.37:8015/cpmbee/completion \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"max_length":200,
+	"repetition_penalty":1.1,
+	"temperature":0.7,
+	"question":"分析一下国泰君安今天的股价"
+}'

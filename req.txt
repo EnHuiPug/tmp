@@ -82,3 +82,7 @@ git lfs install
 git lfs clone https://huggingface.co/openbmb/cpm-bee-10b
 git lfs pull --include="pytorch_model.bin"
 
+
+
+echo `blkid /dev/vdb1 | awk '{print $2}' | sed 's/\"//g'` /deepq ext4 defaults 0 0 >> /etc/fstab
+

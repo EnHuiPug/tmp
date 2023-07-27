@@ -53,10 +53,13 @@ export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 # 下载配置cudnn
 # 解压文件
 tar -xzvf  XXXXXXX.tar.xz
-cp cuda/include/cudnn*.h /usr/local/cuda/include/
-cp cuda/lib64/libcudnn* /usr/local/cuda/lib64/
+cp XXXXXXX/include/cudnn*.h /usr/local/cuda/include/
+cp XXXXXXX/lib/libcudnn* /usr/local/cuda/lib64/
 chmod a+r /usr/local/cuda/include/cudnn*.h
 chmod a+r /usr/local/cuda/lib64/libcudnn*
+# 查看是否安装完成
+cat /usr/local/cuda/include/cudnn_version.h | grep CUDNN_MAJOR -A 2
+
 
 # 安装miniconda，配置python环境
 wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh

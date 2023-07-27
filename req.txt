@@ -1,44 +1,6 @@
-CPM-BEE-10B单机单卡
-准备环境
-1. 已有conda，所以直接使用conda create -n cpmbee python=3.9安装虚拟环境
-conda activate cpmbee激活环境
-2. 克隆代码，在/目录新建文件夹mkdir deepq2023，然后在/deepq2023/目录下运行git clone https://github.com/OpenBMB/CPM-Bee.git
-3. 安装依赖
-  a. 安装pytorch，适配cuda12.1，pip install torch -i https://pypi.tuna.tsinghua.edu.cn/simple/
-  b. 安装bmtrain，pip install bmtrain -i https://pypi.tuna.tsinghua.edu.cn/simple/
-    ⅰ. 如遇到torch版本不适配的问题
-      1. 将pytorch包内的 site-packages/torch/version.py 内的version 修改为12.1
-      2. 将pytorch包内的 site-packages/torch/nn/modules/module.py 第2112行 中的「, remove_duplicate=remove_duplicate」删除
-    ⅱ. 如遇到gcc没有安装的问题
-      1. 可以直接尝试安装gcc和g++，yum install gcc和yum install gcc-c++
-      2. 如果当前的yum源没有gcc或者g++（可以用yum list 或者 yum search 配合 grep 查看），需要更新或者切换yum源，在该目录sudo vi /etc/yum.repos.d/CentOS-Base.repo中进行配置，可以用如下代码直接切换到阿里云的yum源：sudo curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
-    ⅲ. 如遇到gcc版本过低（默认4.8.5）需要升级到>5，参考本文
-      1. sudo yum install centos-release-scl
-      2. sudo yum install devtoolset-8-gcc*
-      3. scl enable devtoolset-8 bash
-      4. 如上三步后可以让当前终端改为gcc==7，此时继续进行pip install bmtrain 即可进行编译（需要～5min）
-  c. 安装其他依赖pip install jieba tqdm tensorboard numpy spacy opendelta
-4. 拷贝权重文件，拷贝权重文件到/deepq2023/目录在并解压，得到/deepq2023/cpm-bee-10b/，
-  a. 该文件夹可以使用初始化模型然后加载权重的方式进行load
-    ⅰ. 代码表现为：model.load_state_dict(torch.load("/deepq2023/cpm-bee-10b/pytorch_model.bin"), strict=False)
-  b. 如果需要使用huggingface的from_pretrained方式进行构建需要将huggingface仓库中的其他文件下来或者直接从云端下在模型权重
-    ⅰ. 将huggingface仓库中的其他文件下载下来：git clone https://huggingface.co/openbmb/cpm-bee-10b，该方式不会下载pytorch_model.bin，需要将之前解压的pytorch_model.bin文件移动到该目录下（如果想下载这样的大文件，需要在本地安装yum install git-lfs），最终的加载方式在代码中表现为XXX.from_pretrained("/deepq2023/tmp/cpm-bee-10b/")
-    ⅱ. 直接在线加载和下载模型以及权重：在代码中表现为XXX.from_pretrained("openbmb/cpm-bee-10b")
 
-
-1、gpu-driver ==535
-/home/xuyi/installer/NVIDIA-Linux-x86_64-535.54.03.run
-	i) 'rpm -i nvidia-driver-local-repo-rhel7-535.54.03-1.0-1.x86_64.rpm'
-	ii) `yum clean all`
-	iii) `yum install cuda-drivers`
-	iv) `reboot`
-
-2、pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
-3、python3.10
-/home/xuyi/build_img/dockerfile/installer/python/Python-3.10.11.tar.xz
-4、配置环境变量：CUDA_HOME
-5、pip install bmtrain
-
+vi  /etc/resolv.conf
+nameserver 114.114.114.114
 
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 vim /etc/yum.repos.d/CentOS-Base.repo
@@ -50,7 +12,6 @@ yum install devtoolset-8-gcc*
 
 mv /usr/bin/gcc /usr/bin/gcc-4.8.5
 ln -s /opt/rh/devtoolset-8/root/bin/gcc /usr/bin/gcc
- 
 mv /usr/bin/g++ /usr/bin/g++-4.8.5
 ln -s /opt/rh/devtoolset-8/root/bin/g++ /usr/bin/g++
 
@@ -58,18 +19,34 @@ sudo systemctl stop gdm.service
 sudo systemctl status gdm.service
 sudo systemctl start gdm.service
 
-
-wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
-
 wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda_11.7.0_515.43.04_linux.run
 sudo sh cuda_11.7.0_515.43.04_linux.run
-
-wget https://developer.download.nvidia.com/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-linux-x86_64-8.9.2.26_cuda11-archive.tar.xz?_f5UPa8xCgeO9bepnkH95zBNN0GDrMuS3sl20rVQXU43WpRzOgjR--4JvEfRsAxC0OOhS9pp7M7qsWMXvSqyMtj3bE32ICMJWrKzjdqORkzmfmfWn_7IMNdtvbUr6muoZMNyhSH_BaTwfSFDpOInnKEAB2_zfE9dkFs
-
 
 export CUDA_HOME=/usr/local/cuda
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 
 
+wget https://developer.download.nvidia.com/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-linux-x86_64-8.9.2.26_cuda11-archive.tar.xz?_f5UPa8xCgeO9bepnkH95zBNN0GDrMuS3sl20rVQXU43WpRzOgjR--4JvEfRsAxC0OOhS9pp7M7qsWMXvSqyMtj3bE32ICMJWrKzjdqORkzmfmfWn_7IMNdtvbUr6muoZMNyhSH_BaTwfSFDpOInnKEAB2_zfE9dkFs
+sudo cp cuda/include/cudnn*.h /usr/local/cuda/include/
+sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64/
+sudo chmod a+r /usr/local/cuda/include/cudnn*.h
+sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
+sh Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
+conda create -n cpmbee python=3.10
+pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
+
+pip install bmtrain -i https://pypi.tuna.tsinghua.edu.cn/simple/
+pip install jieba tqdm tensorboard numpy spacy opendelta -i https://pypi.tuna.tsinghua.edu.cn/simple/
+
+
+
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash 
+yum install git-lfs
+git lfs install
+
+git lfs clone https://huggingface.co/openbmb/cpm-bee-10b
+git lfs pull --include="pytorch_model.bin"
 

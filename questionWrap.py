@@ -1,9 +1,9 @@
 
 
 ## 用户问题类别的prompt模板
-quesionType_prompt_template = "判断给定的用户问题“{}”属于什么类别？"
+quesionType_prompt_template = "判断给定的用户问题“{}”属于以下类别中的哪一个类别？类别是股票分析,板块分析,大盘分析,基金分析,其他金融产品分析,股票筛选,板块筛选,基金筛选,其他金融产品筛选,资产配置,股票信息查询,板块信息查询,市场信息查询,基金信息查询,其他金融产品信息查询,资讯查询,其他信息查询"
 ## 用户问题中NER的prompt模板
-entity_prompt_template = "找出用户问题“{}”中的实体并用json的列表返回结果，key为entityType和entityName。"
+entity_prompt_template = "找出用户问题“{}”中的基金、股票、人名、地名、指标类的实体并用json的列表返回结果，key为entityType和entityName。"
 ## 用户问题相关问的prompt模板
 relatedMatchingprompt_template = "根据用户问题“{}”返回跟它相关的潜在的后续问题。"
 ## 用户问题兜底问的prompt模板

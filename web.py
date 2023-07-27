@@ -4,7 +4,6 @@ import torch
 from cpm_live.generation.bee import CPMBeeBeamSearch
 from cpm_live.models import CPMBeeTorch, CPMBeeConfig
 from cpm_live.tokenizers import CPMBeeTokenizer
-from opendelta import LoraModel
 from flask_cors import CORS
 from questionWrap import Wrapper
 import os
@@ -77,13 +76,13 @@ def test():
         inputdatalist.append({"question": cur_wrapper.bottomLineReply_prompt, "<ans>": ""})
             
         response = beam_search.generate(inputdatalist, max_length=max_length, repetition_penalty=repetition_penalty)
-        res["questionType"] = response["response"][0]["<ans>"]
-        res["entity"] = [response["response"][1]["<ans>"]]
-        res["relatedMatching"] = [response["response"][2]["<ans>"]]
-        res["bottomLineReply"] = response["response"][3]["<ans>"]
+        res["questionType"] = response[0]["<ans>"]
+        res["entity"] = [response[1]["<ans>"]]
+        res["relatedMatching"] = [response[2]["<ans>"]]
+        res["bottomLineReply"] = response[3]["<ans>"]
 
         result['status'] = "SUCCESS"
-        result['response'] = response
+        result['response'] = res
         return jsonify(result)
     finally:
         # 释放线程锁并减少计数器

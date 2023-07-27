@@ -43,10 +43,10 @@ conda activate cpmbee激活环境
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 vim /etc/yum.repos.d/CentOS-Base.repo
 %s/$releasever/7/g
-
-
-
-wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
+yum clean all
+yum makecache
+yum install centos-release-scl
+yum install devtoolset-8-gcc*
 
 mv /usr/bin/gcc /usr/bin/gcc-4.8.5
 ln -s /opt/rh/devtoolset-8/root/bin/gcc /usr/bin/gcc
@@ -54,6 +54,8 @@ ln -s /opt/rh/devtoolset-8/root/bin/gcc /usr/bin/gcc
 mv /usr/bin/g++ /usr/bin/g++-4.8.5
 ln -s /opt/rh/devtoolset-8/root/bin/g++ /usr/bin/g++
 
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
 
 wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda_11.7.0_515.43.04_linux.run
 sudo sh cuda_11.7.0_515.43.04_linux.run
@@ -64,3 +66,6 @@ wget https://developer.download.nvidia.com/compute/cudnn/secure/8.9.2/local_inst
 export CUDA_HOME=/usr/local/cuda
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+
+
+

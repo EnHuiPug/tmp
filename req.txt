@@ -86,3 +86,8 @@ git lfs pull --include="pytorch_model.bin"
 
 echo `blkid /dev/vdb1 | awk '{print $2}' | sed 's/\"//g'` /deepq ext4 defaults 0 0 >> /etc/fstab
 
+export NCCL_DEBUG=INFO
+export TORCH_DISTRIBUTED_DEBUG=INFO
+export TORCH_CPP_LOG_LEVEL=INFO
+
+

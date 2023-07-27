@@ -1,52 +1,80 @@
+系统信息
+# cat /etc/redhat-release
+Red Hat Enterprise Linux Server release 7.4 (Maipo)
+# gcc --version
+gcc version 4.8.5 20150623 (Red Hat 4.8.5-16)
 
+# 设置dns，然后才可使用外网
 vi  /etc/resolv.conf
 nameserver 114.114.114.114
 
+# 使用阿里云的yum源
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+# 将yum源的配置文件中的$releasever强行替换成7，原因是$releasever不会被读取成7
+# 打开CentOS-Base.repo
 vim /etc/yum.repos.d/CentOS-Base.repo
+# 使用以下命令在即可完成替换
 %s/$releasever/7/g
-yum clean all
-yum makecache
+
+# 完成yum源配置
+yum clean all && yum makecache
+
+#升级gcc
 yum install centos-release-scl
 yum install devtoolset-8-gcc*
-
 mv /usr/bin/gcc /usr/bin/gcc-4.8.5
 ln -s /opt/rh/devtoolset-8/root/bin/gcc /usr/bin/gcc
 mv /usr/bin/g++ /usr/bin/g++-4.8.5
 ln -s /opt/rh/devtoolset-8/root/bin/g++ /usr/bin/g++
+# 完成后可以使用 gcc -v 和 g++ -v 来进行测试，是否已经将gcc升级到8.3
 
-sudo systemctl stop gdm.service
-sudo systemctl status gdm.service
-sudo systemctl start gdm.service
+# 关闭centos的x server，不关闭安装显卡驱动会出问题
+systemctl stop gdm.service
+systemctl status gdm.service
+# systemctl start gdm.service
 
+
+# 下载安装驱动
+wget https://us.download.nvidia.cn/tesla/535.54.03/NVIDIA-Linux-x86_64-535.54.03.run
+# 是否安装32bit，选择no
+sh NVIDIA-Linux-x86_64-535.54.03.run
+# 安装完成后可以使用 nvidia-smi 测试
+
+# 下载安装cuda
 wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda_11.7.0_515.43.04_linux.run
-sudo sh cuda_11.7.0_515.43.04_linux.run
-
+# 先填入accept，然后将除了cudatoolkit以外的选项都取消选定，最后选择install
+sh cuda_11.7.0_515.43.04_linux.run
+# 安装完成后在~/.bashrc 中加入如下内容，保存退出后 source ~/.bashrc 
 export CUDA_HOME=/usr/local/cuda
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+# 完成后可以使用 nvcc -V 来测试，此时可以看到cuda版本
 
+# 下载配置cudnn
+# 解压文件
+tar -xzvf  XXXXXXX.tar.xz
+cp cuda/include/cudnn*.h /usr/local/cuda/include/
+cp cuda/lib64/libcudnn* /usr/local/cuda/lib64/
+chmod a+r /usr/local/cuda/include/cudnn*.h
+chmod a+r /usr/local/cuda/lib64/libcudnn*
 
-wget https://developer.download.nvidia.com/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-linux-x86_64-8.9.2.26_cuda11-archive.tar.xz?_f5UPa8xCgeO9bepnkH95zBNN0GDrMuS3sl20rVQXU43WpRzOgjR--4JvEfRsAxC0OOhS9pp7M7qsWMXvSqyMtj3bE32ICMJWrKzjdqORkzmfmfWn_7IMNdtvbUr6muoZMNyhSH_BaTwfSFDpOInnKEAB2_zfE9dkFs
-sudo cp cuda/include/cudnn*.h /usr/local/cuda/include/
-sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64/
-sudo chmod a+r /usr/local/cuda/include/cudnn*.h
-sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
-
+# 安装miniconda，配置python环境
 wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
 sh Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
+# 安装完成以后需要重新起一个终端才可以使得conda命令生效
+# 创建python虚拟环境
 conda create -n cpmbee python=3.10
 pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
-
 pip install bmtrain -i https://pypi.tuna.tsinghua.edu.cn/simple/
 pip install jieba tqdm tensorboard numpy spacy opendelta -i https://pypi.tuna.tsinghua.edu.cn/simple/
 
 
-
-curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash 
+# 安装git-lft
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash 
 yum install git-lfs
 git lfs install
 
+# 从huggingface拉取模型和权重
 git lfs clone https://huggingface.co/openbmb/cpm-bee-10b
 git lfs pull --include="pytorch_model.bin"
 

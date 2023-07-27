@@ -62,6 +62,7 @@ chmod a+r /usr/local/cuda/lib64/libcudnn*
 wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
 sh Miniconda3-py310_23.5.2-0-Linux-x86_64.sh
 # 安装完成以后需要重新起一个终端才可以使得conda命令生效
+# conda config --set auto_activate_base false  使用该命令可以让之后启动的终端不会出现(base)
 # 创建python虚拟环境
 conda create -n cpmbee python=3.10
 pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117

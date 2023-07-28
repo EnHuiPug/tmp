@@ -95,6 +95,12 @@ wget  https://forensics.cert.org/cert-forensics-tools-release-el7.rpm
 rpm -Uvh cert-forensics-tools-release*rpm
 yum --enablerepo=forensics install unrar
 
-
+echo "# errorlog" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/EnHuiPug/errorlog.git
+git push -u origin main
 
 

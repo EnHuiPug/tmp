@@ -105,3 +105,9 @@ git push -u origin main
 
 139.224.250.47
 root@Deepq@123456
+
+
+git clone git@github.com:thunlp/OpenDelta.git
+cd OpenDelta
+python setup.py install
+# python setup.py develop # if you want to do some modifications on the code for your research:

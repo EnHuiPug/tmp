@@ -111,3 +111,5 @@ git clone git@github.com:thunlp/OpenDelta.git
 cd OpenDelta
 python setup.py install
 # python setup.py develop # if you want to do some modifications on the code for your research:
+
+https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-1

@@ -91,8 +91,10 @@ export TORCH_DISTRIBUTED_DEBUG=INFO
 export TORCH_CPP_LOG_LEVEL=INFO
 
 
-wget  http://dag.wieers.com/rpm/packages/unrar/unrar-3.6.8-1.el5.rf.i386.rpm
-rpm -Uvh unrar-3.6.8-1.el5.rf.i386.rpm
+wget  https://forensics.cert.org/cert-forensics-tools-release-el7.rpm
+rpm -Uvh cert-forensics-tools-release*rpm
+yum --enablerepo=forensics install unrar
+
 
 
 

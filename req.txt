@@ -103,4 +103,5 @@ git branch -M main
 git remote add origin https://github.com/EnHuiPug/errorlog.git
 git push -u origin main
 
-
+139.224.250.47
+root@Deepq@123456

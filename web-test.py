@@ -8,7 +8,7 @@ from flask_cors import CORS
 from questionWrap import Wrapper
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 app = Flask(__name__)
 CORS(app)
@@ -40,17 +40,6 @@ options = {"<option_0>": "板块查询", "<option_1>": "板块分析", "<option_
 
 @app.route('/cpmbee/completion', methods=['POST'])
 def test():
-        #     response={
-        #     "questionType":"股票分析", 
-        #     "entity":[
-        #         {"entityType": "股票", "entityName":["贵州茅台"]}, 
-        #         {"entityType": "基金", "entityName":["贵州茅台"]}, 
-        #         {"entityType": "指标", "entityName":["贵州", "茅台"]}, 
-        #         {"entityType": "人名", "entityName":[""]}
-        #     ],
-        #     "relatedMatching":"XXXX" ,
-        #     "bottomLineReply":"XXXXX"
-        # }
     global counter
 
     # 请求过载，返回提示信息
@@ -75,17 +64,26 @@ def test():
             "bottomLineReply":""
         }
 
+        #问题分类
         inputdatalist = []
-        inputdatalist.append({"question": cur_wrapper.quesionType_prompt, "<ans>": ""})
-        # inputdatalist.append({"question": cur_wrapper.entity_prompt, "<ans>": ""})
-        # inputdatalist.append({"question": cur_wrapper.relatedMatching_prompt, "<ans>": ""})
-        inputdatalist.append({"question": cur_wrapper.bottomLineReply_prompt, "<ans>": ""})
-            
+        inputdatalist.append({"input": question, "prompt": "识别问题的意图",  "options": options, "<ans>": ""})
+
+        response = beam_search.generate(inputdatalist, max_length=2, repetition_penalty=repetition_penalty)
+        if response[0]["<ans>"] and response[0]["<ans>"] in options:
+            res["questionType"] = options[response[0]["<ans>"]]
+
+        #实体识别
+        inputdatalist = []
+        inputdatalist.append({"input": question, "prompt": "识别文中包含的股票名、基金名、指标、人名、板块，并以json输出。", "<ans>": ""})
+        response = beam_search.generate(inputdatalist, max_length=50, repetition_penalty=repetition_penalty)
+        if response[0]["<ans>"]:
+            res["entity"] = response[0]["<ans>"]
+
+        #兜底回答
+        inputdatalist = []
+        inputdatalist.append({"question": cur_wrapper.bottomLineReply_prompt, "<ans>": ""})        
         response = beam_search.generate(inputdatalist, max_length=max_length, repetition_penalty=repetition_penalty)
-        res["questionType"] = response[0]["<ans>"]
-        # res["entity"] = [response[1]["<ans>"]]
-        # res["relatedMatching"] = [response[2]["<ans>"]]
-        res["bottomLineReply"] = response[1]["<ans>"]
+        res["bottomLineReply"] = response[0]["<ans>"]
 
         result['status'] = "SUCCESS"
         result['response'] = res
@@ -135,7 +133,7 @@ def chat():
         with lock:
             counter -= 1
 
-@app.route('/cpmbee/test', methods=['POST'])
+@app.route('/cpmbee/testclassify', methods=['POST'])
 def testclassify():
        
     global counter
@@ -209,7 +207,7 @@ def testner():
             
         response = beam_search.generate(inputdatalist, max_length=max_length, repetition_penalty=repetition_penalty)
         if response[0]["<ans>"]:
-            res["entity"] = options[response[0]["<ans>"]]
+            res["entity"] = response[0]["<ans>"]
        
         result['status'] = "SUCCESS"
         result['response'] = res

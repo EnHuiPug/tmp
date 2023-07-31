@@ -12,18 +12,21 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 app = Flask(__name__)
 CORS(app)
-
+tokenizer = CPMBeeTokenizer()
+model = CPMBeeTorch(config=config)
 # 加载模型
 config = CPMBeeConfig.from_json_file("config/cpm-bee-10b.json")
 ckpt_path = "/mnt/xusheng/modelbest/cpm-bee-10b/pytorch_model.bin"
+lora_path = ""
+delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
+model.load_state_dict(torch.load(lora_path), strict=False)
+
+model.load_state_dict(torch.load(ckpt_path))
+
+
 # config = CPMBeeConfig.from_json_file("config/cpm-bee-20b.json")
 # ckpt_path = "/mnt/20b.pt"
-tokenizer = CPMBeeTokenizer()
-model = CPMBeeTorch(config=config)
-model.load_state_dict(torch.load(ckpt_path))
-import bminf
-with torch.cuda.device(0):
-    model = bminf.wrapper(model, quantization=False)
+
 model.half().cuda()
 beam_search = CPMBeeBeamSearch(
     model=model,
